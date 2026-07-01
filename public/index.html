@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aite Eco Resort - Opiniones Recepción</title>
+
+  <!-- Librería para generar códigos QR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root{
+      --color-primario: #5c4b3a;
+      --color-secundario: #a39281;
+      --color-fondo-menu: #fcfbf6;
+      --color-texto-oscuro: #333;
+      --color-google: #4285F4;
+      --color-tripadvisor: #00AFEF;
+      --fuente-principal: 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    *{ box-sizing: border-box; margin:0; padding:0; }
+    html,body{ width:100%; height:100%; overflow:hidden; background:#000; font-family:var(--fuente-principal); }
+
+    /* Logo */
+    .logo-corporativo{
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      z-index:100;
+      width:130px;
+      transition: opacity .3s ease;
+    }
+    .logo-corporativo img{ width:100%; height:auto; display:block; }
+
+    /* Contenedor principal */
+    .pantalla{ width:100%; height:100%; position:relative; }
+
+    /* Carrusel */
+    .carrusel{
+      width:100%; height:100%; position:absolute; top:0; left:0;
+      cursor:pointer; z-index:10; transition: opacity .8s ease;
+    }
+    .diapositiva{
+      position:absolute; width:100%; height:100%; opacity:0;
+      transition: opacity 1.5s ease-in-out; background-size:cover; background-position:center;
+    }
+    .diapositiva.activa{ opacity:1; }
+
+    .diapositiva::after{
+      content:''; position:absolute; top:0; left:0; width:100%; height:100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+    }
+
+    .texto-diapositiva{
+      position:absolute; bottom:12%; left:5%; right:5%; color:#fff; z-index:12; text-align:center;
+      text-shadow: 0 3px 10px rgba(0,0,0,.7);
+    }
+    .texto-diapositiva h1{ font-size:3rem; margin-bottom:12px; letter-spacing:1px; font-weight:300; }
+    .texto-diapositiva p{ font-size:1.4rem; color:#ddd; font-weight:400; animation:parpadeo 2s infinite ease-in-out; }
+
+    /* Menu interactivo */
+    .menu-interactivo{
+      width:100%; height:100%; position:absolute; top:0; left:0; background:var(--color-fondo-menu);
+      z-index:5; opacity:0; pointer-events:none; transition:opacity .5s ease; display:grid;
+      grid-template-rows:auto 1fr auto; padding:40px;
+    }
+    .menu-interactivo.activo{ opacity:1; pointer-events:auto; z-index:20; }
+
+    .encabezado-menu{ text-align:center; margin-top:50px; margin-bottom:20px; }
+    .encabezado-menu h2{ color:var(--color-primario); font-size:2.8rem; margin-bottom:10px; font-weight:300; }
+    .encabezado-menu p{ color:#555; font-size:1.1rem; }
+
+    .columnas-container{
+      display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; max-width:1100px; margin:0 auto; width:100%;
+    }
+
+    .columna{
+      background:#fff; border-radius:16px; padding:35px; height:100%; display:flex; flex-direction:column;
+      justify-content:center; align-items:center; box-shadow:0 10px 30px rgba(92,75,58,0.1); border:1px solid rgba(0,0,0,0.03);
+    }
+
+    .columna-titulo{ font-size:1.3rem; color:var(--color-primario); font-weight:600; margin-bottom:25px; text-align:center; }
+
+    .btn-opinion{
+      width:100%; max-width:320px; padding:18px 30px; margin-bottom:18px; border:none; border-radius:12px;
+      font-size:1.1rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      gap:15px; text-decoration:none; transition: transform .1s, box-shadow .2s; color:white;
+    }
+    .btn-opinion:active{ transform:scale(.97); }
+    .btn-google{ background:var(--color-google); box-shadow:0 4px 15px rgba(66,133,244,.2); }
+    .btn-trip{ background:var(--color-tripadvisor); box-shadow:0 4px 15px rgba(0,175,239,.2); }
+
+    .qr-wrapper{ display:flex; gap:30px; justify-content:center; width:100%; flex-wrap:wrap; }
+    .qr-box{ display:flex; flex-direction:column; align-items:center; font-size:.9rem; color:#555; font-weight:500; }
+    .qr-codigo{ padding:10px; background:#fff; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; }
+
+    .barra-retorno{ text-align:center; color:#888; font-size:.9rem; padding-top:20px; }
+    .btn-volver{
+      background:none; border:1px solid rgba(92,75,58,.2); padding:8px 20px; border-radius:20px; margin-top:10px;
+      cursor:pointer; color:var(--color-primario); font-weight:600;
+    }
+
+    @keyframes parpadeo{ 0%,100%{opacity:.5;} 50%{opacity:1;} }
+
+    /* Pequeñas mejoras para pantallas pequeñas */
+    @media (max-width:700px){
+      .texto-diapositiva h1{ font-size:2rem; }
+      .encabezado-menu h2{ font-size:2rem; }
+      .columnas-container{ grid-template-columns:1fr; padding:20px; gap:20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGO CORPORATIVO -->
+  <div class="logo-corporativo" aria-hidden="false">
+    <img src="https://aite.com.co/wp-content/uploads/2019/04/logo-AITE-eco-resort-web.png" alt="Aite Eco Resort - logo">
+  </div>
+
+  <div class="pantalla">
+
+    <!-- CARRUSEL -->
+    <div id="carrusel" class="carrusel" onclick="mostrarMenu()" role="button" aria-label="Mostrar opciones para dejar reseña" tabindex="0">
+      <div class="diapositiva activa" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Piscina-y-rio.jpg');">
+        <div class="texto-diapositiva">
+          <h1>Tu descanso es nuestra prioridad</h1>
+          <p>✨ Toca para compartir tu experiencia con nosotros ✨</p>
+        </div>
+      </div>
+
+      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Restaurante-vista-piscina.jpg');">
+        <div class="texto-diapositiva">
+          <h1>Momentos inolvidables frente al mar</h1>
+          <p>✨ Toca para calificarnos, tu opinión nos ayuda a crecer ✨</p>
+        </div>
+      </div>
+
+      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Fauna-aite.jpg');">
+        <div class="texto-diapositiva">
+          <h1>Conexión directa con la naturaleza</h1>
+          <p>✨ Haz clic aquí para dejar tu reseña ✨</p>
+        </div>
+      </div>
+
+      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/IMG_1033.jpg');">
+        <div class="texto-diapositiva">
+          <h1>Tu paraíso en el caribe colombiano</h1>
+          <p>✨ Ayúdanos contando tu experiencia ✨</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU INTERACTIVO -->
+    <div id="menuInteractivo" class="menu-interactivo" aria-hidden="true">
+      <div class="encabezado-menu">
+        <h2>¿Te gustaría calificarnos?</h2>
+        <p>Elige una opción para dejar tu reseña en cuestión de segundos</p>
+      </div>
+
+      <div class="columnas-container">
+        <div class="columna">
+          <div class="columna-titulo">📱 Calificar aquí mismo en la tablet</div>
+          <a id="linkGoogleTablet" href="#" class="btn-opinion btn-google" target="_blank" rel="noopener noreferrer" aria-label="Abrir enlace de Google Maps en nueva ventana">
+            Google Maps
+          </a>
+          <a id="linkTripTablet" href="#" class="btn-opinion btn-trip" target="_blank" rel="noopener noreferrer" aria-label="Abrir enlace de TripAdvisor en nueva ventana">
+            TripAdvisor
+          </a>
+        </div>
+
+        <div class="columna">
+          <div class="columna-titulo">📸 Escanear con tu celular (QR)</div>
+          <div class="qr-wrapper" aria-hidden="false">
+            <div class="qr-box">
+              <div id="qrGoogle" class="qr-codigo" aria-hidden="true"></div>
+              <span>Google Maps</span>
+            </div>
+            <div class="qr-box">
+              <div id="qrTrip" class="qr-codigo" aria-hidden="true"></div>
+              <span>TripAdvisor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="barra-retorno">
+        <p>La pantalla volverá a las fotos automáticamente si no se usa por un momento.</p>
+        <button class="btn-volver" onclick="regresarACarrusel(event)" aria-label="Volver a las fotos">Volver a las fotos ahora</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // CONFIG: pega aquí tus enlaces reales (enlaces directos a la página de reseñas)
+    const CONFIG = {
+      urlGoogleMaps: "https://maps.google.com",
+      urlTripAdvisor: "https://www.tripadvisor.com",
+      tiempoDiapositiva: 7000,
+      tiempoEsperaMenu: 60000
+    };
+
+    // Asignar enlaces a botones
+    const linkGoogle = document.getElementById('linkGoogleTablet');
+    const linkTrip = document.getElementById('linkTripTablet');
+    linkGoogle.href = CONFIG.urlGoogleMaps;
+    linkTrip.href = CONFIG.urlTripAdvisor;
+
+    // Generar QR
+    new QRCode(document.getElementById("qrGoogle"), { text: CONFIG.urlGoogleMaps, width:130, height:130 });
+    new QRCode(document.getElementById("qrTrip"), { text: CONFIG.urlTripAdvisor, width:130, height:130 });
+
+    // Lógica del carrusel y menú
+    let indiceDiapositiva = 0;
+    let intervaloCarrusel;
+    let timeoutRetornoMenu;
+    const diapositivas = document.querySelectorAll('.diapositiva');
+    const carruselDom = document.getElementById('carrusel');
+    const menuDom = document.getElementById('menuInteractivo');
+
+    function iniciarCarrusel(){
+      clearInterval(intervaloCarrusel);
+      intervaloCarrusel = setInterval(()=>{
+        diapositivas[indiceDiapositiva].classList.remove('activa');
+        indiceDiapositiva = (indiceDiapositiva + 1) % diapositivas.length;
+        diapositivas[indiceDiapositiva].classList.add('activa');
+      }, CONFIG.tiempoDiapositiva);
+    }
+
+    function mostrarMenu(){
+      clearInterval(intervaloCarrusel);
+      carruselDom.style.opacity = "0";
+      setTimeout(()=>{
+        menuDom.classList.add('activo');
+        menuDom.setAttribute('aria-hidden','false');
+      }, 300);
+      reiniciarTimeoutRetorno();
+    }
+
+    function reiniciarTimeoutRetorno(){
+      clearTimeout(timeoutRetornoMenu);
+      timeoutRetornoMenu = setTimeout(()=>{ regresarACarrusel(); }, CONFIG.tiempoEsperaMenu);
+    }
+
+    function regresarACarrusel(event){
+      if(event) event.stopPropagation();
+      menuDom.classList.remove('activo');
+      menuDom.setAttribute('aria-hidden','true');
+      carruselDom.style.opacity = "1";
+      clearTimeout(timeoutRetornoMenu);
+      iniciarCarrusel();
+    }
+
+    // Reinicia el temporizador si interactúan con el menú
+    menuDom.addEventListener('click', reiniciarTimeoutRetorno);
+
+    // Soporte para teclado (Enter/Espacio) en el carrusel
+    carruselDom.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); mostrarMenu(); }
+    });
+
+    // Iniciar
+    iniciarCarrusel();
+  </script>
+</body>
+</html>
