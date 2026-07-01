@@ -149,35 +149,9 @@
 
   <div class="pantalla">
 
-    <!-- CARRUSEL -->
+    <!-- CARRUSEL (se genera dinámicamente desde el array SLIDES) -->
     <div id="carrusel" class="carrusel" onclick="mostrarMenu()" role="button" aria-label="Mostrar opciones para dejar reseña" tabindex="0">
-      <div class="diapositiva activa" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Piscina-y-rio.jpg');">
-        <div class="texto-diapositiva">
-          <h1>Tu descanso es nuestra prioridad</h1>
-          <p>✨ Toca para compartir tu experiencia con nosotros ✨</p>
-        </div>
-      </div>
-
-      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Restaurante-vista-piscina.jpg');">
-        <div class="texto-diapositiva">
-          <h1>Momentos inolvidables frente al mar</h1>
-          <p>✨ Toca para calificarnos, tu opinión nos ayuda a crecer ✨</p>
-        </div>
-      </div>
-
-      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/Fauna-aite.jpg');">
-        <div class="texto-diapositiva">
-          <h1>Conexión directa con la naturaleza</h1>
-          <p>✨ Haz clic aquí para dejar tu reseña ✨</p>
-        </div>
-      </div>
-
-      <div class="diapositiva" style="background-image:url('https://aite.com.co/wp-content/uploads/2019/12/IMG_1033.jpg');">
-        <div class="texto-diapositiva">
-          <h1>Tu paraíso en el caribe colombiano</h1>
-          <p>✨ Ayúdanos contando tu experiencia ✨</p>
-        </div>
-      </div>
+      <!-- Las diapositivas serán generadas por JS desde el array SLIDES -->
     </div>
 
     <!-- MENU INTERACTIVO -->
@@ -222,13 +196,48 @@
   </div>
 
   <script>
-    // CONFIG: pega aquí tus enlaces reales (enlaces directos a la página de reseñas)
+    // CONFIG: Enlaces de reseñas
     const CONFIG = {
       urlGoogleMaps: "https://maps.google.com",
       urlTripAdvisor: "https://www.tripadvisor.com",
       tiempoDiapositiva: 7000,
       tiempoEsperaMenu: 60000
     };
+
+    // Array de URLs directas de Google Drive (descarga)
+    const SLIDES = [
+      'https://drive.google.com/uc?export=download&id=16zNptp47Ga92MFlNYFDBjOMZgZ2K2p8Q',
+      'https://drive.google.com/uc?export=download&id=1vXAmZ9PqCJH18smVSVnEoANk40xvCUGc',
+      'https://drive.google.com/uc?export=download&id=1_fHm-7ca6r685HbkW1_m8Fv-mx4nSdah',
+      'https://drive.google.com/uc?export=download&id=1nyBFFLQ7CUXluIXJHLv0Y4BmX9NYzOY9',
+      'https://drive.google.com/uc?export=download&id=19Oe-VwnIt0s0_lB4hKUeC6wT-KeXBp7U',
+      'https://drive.google.com/uc?export=download&id=1Faye9E6SSF3brmlJloZrCptwVg6i1NMO',
+      'https://drive.google.com/uc?export=download&id=1C9iDMCx60U3UGPeRRohmdGzIaxwsbDpb',
+      'https://drive.google.com/uc?export=download&id=1HbSNI-lnhQE8qPv_P7qq4xSjsc2IPE0o',
+      'https://drive.google.com/uc?export=download&id=1uvIE96jlb_hQYCMSC3M2JsEu1n_ln7Ah',
+      'https://drive.google.com/uc?export=download&id=1b3oaCcZ1QD-3TIlRecGYQqA4wZwFml6e',
+      'https://drive.google.com/uc?export=download&id=1RbZn1sr-E-sOK03KgVzl1-Hj7btCZSwe',
+      'https://drive.google.com/uc?export=download&id=1_XujZblCf875JJvedY_nhGIjVdJSQWgE',
+      'https://drive.google.com/uc?export=download&id=1uwQhzvnzkalRsmMXEiOf8cVr_hpBkC1A',
+      'https://drive.google.com/uc?export=download&id=1jnl6ar3_7U0H7PXCpaXb3iQ-XrbCuJIW',
+      'https://drive.google.com/uc?export=download&id=1KiDhiBsg38JDmpZ1huQcOeQKyHTOWusw',
+    ];
+
+    // Genera las diapositivas dinámicamente desde el array SLIDES
+    function generarDiapositivas() {
+      const carrusel = document.getElementById('carrusel');
+      carrusel.innerHTML = '';
+      SLIDES.forEach((src, i) => {
+        const div = document.createElement('div');
+        div.className = 'diapositiva' + (i === 0 ? ' activa' : '');
+        div.style.backgroundImage = `url('${src}')`;
+        const texto = document.createElement('div');
+        texto.className = 'texto-diapositiva';
+        texto.innerHTML = `<h1>Tu descanso es nuestra prioridad</h1><p>✨ Toca para compartir tu experiencia con nosotros ✨</p>`;
+        div.appendChild(texto);
+        carrusel.appendChild(div);
+      });
+    }
 
     // Asignar enlaces a botones
     const linkGoogle = document.getElementById('linkGoogleTablet');
@@ -247,7 +256,6 @@
       const size = calcularTamanoQR();
       const containerG = document.getElementById('qrGoogle');
       const containerT = document.getElementById('qrTrip');
-      // limpiar contenedores antes de generar (por si ya existen)
       containerG.innerHTML = '';
       containerT.innerHTML = '';
       new QRCode(containerG, { text: CONFIG.urlGoogleMaps, width: size, height: size });
@@ -258,9 +266,13 @@
     let indiceDiapositiva = 0;
     let intervaloCarrusel;
     let timeoutRetornoMenu;
-    const diapositivas = document.querySelectorAll('.diapositiva');
+    let diapositivas;
     const carruselDom = document.getElementById('carrusel');
     const menuDom = document.getElementById('menuInteractivo');
+
+    function actualizarDiapositivas() {
+      diapositivas = document.querySelectorAll('.diapositiva');
+    }
 
     function iniciarCarrusel(){
       clearInterval(intervaloCarrusel);
@@ -295,21 +307,21 @@
       iniciarCarrusel();
     }
 
-    // Reinicia el temporizador si interactúan con el menú
     menuDom.addEventListener('click', reiniciarTimeoutRetorno);
 
-    // Soporte para teclado (Enter/Espacio) en el carrusel
     carruselDom.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); mostrarMenu(); }
     });
 
-    // Iniciar
+    // Inicializar
     window.addEventListener('load', ()=>{
+      generarDiapositivas();
+      actualizarDiapositivas();
       iniciarCarrusel();
       generarQRs();
     });
 
-    // Regenerar QR al redimensionar (debounced)
+    // Regenerar QR al redimensionar
     let _qrResizeTimeout;
     window.addEventListener('resize', ()=>{ clearTimeout(_qrResizeTimeout); _qrResizeTimeout = setTimeout(generarQRs, 200); });
 
